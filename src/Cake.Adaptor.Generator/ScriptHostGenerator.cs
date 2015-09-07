@@ -21,7 +21,6 @@ namespace Cake.Adaptor.Generator
             var references = GetReferences();
             var parseOptions = new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary, usings: GetUsings().Select(syntax => syntax.Name.ToString()));
             var mainClass = CreateMainClass();
-            Output(mainClass.GetRoot());
             var compilation = CSharpCompilation.Create("Cake.Adaptor", new List<SyntaxTree> { mainClass }, options: parseOptions);
             compilation = compilation.WithReferences(references);
             var diagnostics = compilation.GetDiagnostics();
@@ -33,20 +32,6 @@ namespace Cake.Adaptor.Generator
             var binPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 
             compilation.Emit(Path.Combine(binPath, "Cake.Adaptor.dll"));
-        }
-
-        private static void Output(SyntaxNode node)
-        {
-            var test = node.NormalizeWhitespace().GetText();
-            using (var fileStream = File.Open(@"C:\temp\Cake.Adaptor.txt", FileMode.Create))
-            using (var streamWriter = new StreamWriter(fileStream))
-            {
-                foreach (var line in test.Lines)
-                {
-                    streamWriter.WriteLine(line);
-                    Console.WriteLine(line);
-                }
-            }
         }
 
         private static SyntaxTree CreateMainClass(string cakeScriptPath = null)
